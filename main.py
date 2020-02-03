@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
+import sys
+sys.path.append('.')
 import yaml
 import torch
 import argparse
@@ -11,9 +13,9 @@ torch.backends.cudnn.benchmark = False
 
 # Arguments
 parser = argparse.ArgumentParser(description='Training E2E asr.')
-parser.add_argument('--config', type=str, help='Path to experiment config.')
+parser.add_argument('--config', type=str,default='/docker-share/SPEECH/End-to-end-ASR-Pytorch/config/libri/asr_example.yaml', help='Path to experiment config.')
 parser.add_argument('--name', default=None, type=str, help='Name for logging.')
-parser.add_argument('--logdir', default='log/', type=str,
+parser.add_argument('--logdir', default='/docker-share/data/tmp/log/', type=str,
                     help='Logging path.', required=False)
 parser.add_argument('--ckpdir', default='ckpt/', type=str,
                     help='Checkpoint path.', required=False)
@@ -27,7 +29,7 @@ parser.add_argument('--cudnn-ctc', action='store_true',
                     help='Switches CTC backend from torch to cudnn')
 parser.add_argument('--njobs', default=6, type=int,
                     help='Number of threads for dataloader/decoding.', required=False)
-parser.add_argument('--cpu', action='store_true', help='Disable GPU training.')
+parser.add_argument('--cpu',default=False, action='store_true', help='Disable GPU training.')
 parser.add_argument('--no-pin', action='store_true',
                     help='Disable pin-memory for dataloader')
 parser.add_argument('--test', action='store_true', help='Test the model.')
@@ -51,6 +53,8 @@ np.random.seed(paras.seed)
 torch.manual_seed(paras.seed)
 if torch.cuda.is_available():
     torch.cuda.manual_seed_all(paras.seed)
+else:
+    assert False
 
 # Hack to preserve GPU ram just incase OOM later on server
 if paras.gpu and paras.reserve_gpu > 0:
