@@ -8,3 +8,4 @@ tb-nightly
 torch>=1.2.0
 torchaudio
 matplotlib
+util@git+https://git@github.com/dertilo/util.git#egg=util
