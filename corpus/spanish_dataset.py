@@ -3,12 +3,13 @@ import random
 from torch.utils.data import Dataset
 from corpora.spanish_corpora import spanish_corpus
 
-train_eval_idx=None
+train_eval_idx = None
+
 
 class SpanishDataset(Dataset):
     def __init__(self, path, split, tokenizer, bucket_size, ascending=False):
         del ascending
-        assert split=='train' or split=='eval'
+        assert split == "train" or split == "eval"
         # Setup
         self.path = path
         self.batch_size = bucket_size
@@ -22,9 +23,9 @@ class SpanishDataset(Dataset):
             random.shuffle(idx)
             train_eval_split_idx = round(len(data) * 0.9)
             train_eval_idx = {
-                'train':idx[:train_eval_split_idx],
-                'eval':idx[train_eval_split_idx:]
-                            }
+                "train": idx[:train_eval_split_idx],
+                "eval": idx[train_eval_split_idx:],
+            }
 
         fname_txt = [data[k] for k in train_eval_idx[split]]
         fname_txt = sorted(fname_txt, key=lambda x: len(x[1]))
