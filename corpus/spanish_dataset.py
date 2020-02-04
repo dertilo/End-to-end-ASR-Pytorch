@@ -1,9 +1,10 @@
 import random
 
 from torch.utils.data import Dataset
-from corpora.spanish_corpora import spanish_corpus
+from util import data_io
 
-train_eval_idx = None
+from corpora.spanish_corpora import spanish_corpus
+TRAIN_EVAL_DATASET_FILES = ('train_spanish.json','eval_spanish.json')
 
 
 class SpanishDataset(Dataset):
@@ -14,21 +15,9 @@ class SpanishDataset(Dataset):
         self.path = path
         self.batch_size = bucket_size
         self.tokenizer = tokenizer
-
-        data = list(spanish_corpus(path).items())
-
-        global train_eval_idx
-        if train_eval_idx is None:
-            idx = list(range(len(data)))
-            random.shuffle(idx)
-            train_eval_split_idx = round(len(data) * 0.9)
-            train_eval_idx = {
-                "train": idx[:train_eval_split_idx],
-                "eval": idx[train_eval_split_idx:],
-            }
-
-        fname_txt = [data[k] for k in train_eval_idx[split]]
-        fname_txt = sorted(fname_txt, key=lambda x: len(x[1]))
+        file = TRAIN_EVAL_DATASET_FILES[0] if split=='train' else TRAIN_EVAL_DATASET_FILES[1]
+        data = list(data_io.read_jsonl(file))
+        fname_txt = sorted(data, key=lambda x: len(x[1]))
 
         self.file_list, self.texts = zip(*[(f_name, txt) for f_name, txt in fname_txt])
         self.texts = list(self.texts[:])

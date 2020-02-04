@@ -1,6 +1,12 @@
 import argparse
+import os
+import random
+
+from util import data_io
 
 from bin.train_asr import Solver
+from corpora.spanish_corpora import spanish_corpus
+from corpus.spanish_dataset import TRAIN_EVAL_DATASET_FILES
 
 if __name__ == "__main__":
     params = {
@@ -91,6 +97,15 @@ if __name__ == "__main__":
             "decoder": {"module": "LSTM", "dim": dim, "layer": 1, "dropout": 0},
         },
     }
+
+    if not all([os.path.isfile(f) for f in TRAIN_EVAL_DATASET_FILES]):
+        data = list(spanish_corpus(config['data']['corpus']['path']).items())
+        idx = list(range(len(data)))
+        random.shuffle(idx)
+        train_eval_split_idx = round(len(data) * 0.9)
+        train_file,eval_file = TRAIN_EVAL_DATASET_FILES
+        data_io.write_jsonl(train_file, [data[k] for k in idx[:train_eval_split_idx]])
+        data_io.write_jsonl(eval_file, [data[k] for k in idx[train_eval_split_idx:]])
 
     params = argparse.Namespace(**params)
     solver = Solver(config, params, mode="train")
