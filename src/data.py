@@ -68,6 +68,8 @@ def create_dataset(tokenizer, ascending, name, path, bucketing, batch_size,
     # Recognize corpus
     if name.lower() == "librispeech":
         from corpus.librispeech import LibriDataset as Dataset
+    elif name.lower() == 'spanish':
+        from corpus.spanish_dataset import SpanishDataset as Dataset
     else:
         raise NotImplementedError
 
@@ -79,9 +81,9 @@ def create_dataset(tokenizer, ascending, name, path, bucketing, batch_size,
         bucket_size = batch_size if bucketing and (
             not ascending) else 1  # Ascending without bucketing
         # Do not use bucketing for dev set
-        dv_set = Dataset(path, dev_split, tokenizer, 1)
         tr_set = Dataset(path, train_split, tokenizer,
                          bucket_size, ascending=ascending)
+        dv_set = Dataset(path, dev_split, tokenizer, 1)
         # Messages to show
         msg_list = _data_msg(name, path, train_split.__str__(), len(tr_set),
                              dev_split.__str__(), len(dv_set), batch_size, bucketing)
@@ -110,7 +112,7 @@ def create_textset(tokenizer, train_split, dev_split, name, path, bucketing, bat
     if name.lower() == "librispeech":
         from corpus.librispeech import LibriTextDataset as Dataset
     elif name.lower() == 'spanish':
-        from corpus.spanish_corpora import SpanishTextDataset as Dataset
+        from corpus.spanish_dataset import SpanishTextDataset as Dataset
     else:
         raise NotImplementedError
 
