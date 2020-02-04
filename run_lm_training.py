@@ -30,15 +30,15 @@ if __name__ == "__main__":
         "data": {
             "corpus": {
                 "name": "spanish",
-                "path": "/home/tilo/data/asr_data",
-                "train_split": ["es_co_female"],
-                "dev_split": ["es_co_female"],
+                "path": "/home/tilo/gunther/data/asr_datasets",
+                "train_split": [],
+                "dev_split": [],
                 "bucketing": True,
                 "batch_size": 32,
             },
             "text": {
                 "mode": "subword",
-                "vocab_file": "tests/sample_data/subword-16k.model",
+                "vocab_file": "spanish_subword.model",
             },
         },
         "hparas": {

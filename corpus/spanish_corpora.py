@@ -4,7 +4,7 @@ from pathlib import Path
 from os.path import join, getsize
 from joblib import Parallel, delayed
 from torch.utils.data import Dataset
-from typing import Dict
+from typing import Dict, NamedTuple
 from util import data_io
 
 # class TextAndAudioDataset(Dataset):
@@ -41,22 +41,27 @@ from util import data_io
 #
 #     def __len__(self):
 #         return len(self.file_list)
+from corpora.spanish_corpora import spanish_corpus
 
 
 class SpanishTextDataset(Dataset):
     def __init__(self, path, split, tokenizer, batch_size):
+        del split
         self.path = path
         self.batch_size = batch_size
-        self.texts = [t for dataset in split for t in read_texts_mailabs(join(path,dataset)).values()]
+        self.texts = [
+            t
+            for t in spanish_corpus(path).values()
+        ]
         self.tokenizer = tokenizer
 
     def __getitem__(self, index):
         if self.batch_size > 1:
             index = min(len(self.texts) - self.batch_size, index)
-            for i in range(index, index+self.batch_size):
+            for i in range(index, index + self.batch_size):
                 if type(self.texts[i]) is str:
                     self.texts[i] = self.tokenizer.encode(self.texts[i])
-            return self.texts[index:index + self.batch_size]
+            return self.texts[index : index + self.batch_size]
         else:
             if type(self.texts[index]) is str:
                 self.texts[index] = self.tokenizer.encode(self.texts[index])
@@ -64,23 +69,3 @@ class SpanishTextDataset(Dataset):
 
     def __len__(self):
         return len(self.texts)
-
-
-def read_texts_mailabs(path,text_file="line_index.tsv")->Dict[str,str]:
-    def parse_line(l):
-        file_name, text = l.split("\t")
-        return file_name + ".wav", text
-
-    filename2text = {
-        file_name: text
-        for file_name, text in (
-        parse_line(l) for l in data_io.read_lines(join(path, text_file))
-    )
-    }
-    return filename2text
-
-
-if __name__ == "__main__":
-    path = "/home/tilo/data/asr_data"
-    read_texts_mailabs(path)
-    print()

@@ -110,7 +110,7 @@ def create_textset(tokenizer, train_split, dev_split, name, path, bucketing, bat
     if name.lower() == "librispeech":
         from corpus.librispeech import LibriTextDataset as Dataset
     elif name.lower() == 'spanish':
-        from corpus.slr72_colombian_spanish import SpanishTextDataset as Dataset
+        from corpus.spanish_corpora import SpanishTextDataset as Dataset
     else:
         raise NotImplementedError
 
